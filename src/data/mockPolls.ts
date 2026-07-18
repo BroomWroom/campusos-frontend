@@ -1,6 +1,7 @@
 import type { Poll } from "../types/poll";
+import { wrapArray } from "../utils/mockData";
 
-export const mockPolls: Poll[] = [
+const rawPolls: Poll[] = [
   {
     id: "1",
     title: "Best Technical Event?",
@@ -57,3 +58,5 @@ export const mockPolls: Poll[] = [
     ],
   },
 ];
+
+export const mockPolls = wrapArray(() => rawPolls);

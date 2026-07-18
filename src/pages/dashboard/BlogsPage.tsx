@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, PenLine, ArrowLeft, Image as ImageIcon, Check, Upload } from 'lucide-react';
+import { Clock, PenLine, ArrowLeft, Image as ImageIcon, Check, Upload, BookOpen } from 'lucide-react';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { FadeIn, StaggerGroup, StaggerItem } from '../../components/ui/motion';
@@ -179,81 +179,98 @@ export default function BlogsPage() {
         </div>
       </FadeIn>
 
-      {/* Featured */}
-      {posts.length > 0 && (
+      {posts.length === 0 ? (
         <FadeIn delay={0.08}>
-          <motion.div
-            whileHover={{ y: -4 }}
-            onClick={() => setSelectedPost(posts[0])}
-            className="card-surface overflow-hidden transition-shadow hover:shadow-lift cursor-pointer bg-white/70"
-          >
-            <div className="grid md:grid-cols-2">
-              <div className="relative h-56 overflow-hidden bg-navy md:h-auto">
-                <img src={posts[0].cover} alt="" className="h-full w-full object-cover" />
-                <div className="absolute left-4 top-4">
-                  <Badge tone="navy" dot>Featured</Badge>
-                </div>
-              </div>
-              <div className="p-6 sm:p-8 text-left">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#8a6d3b]">Editor's pick</p>
-                <h2 className="mt-2 text-2xl font-bold leading-tight text-ink">{posts[0].title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-ink-soft">{posts[0].excerpt}</p>
-                <div className="mt-5 flex items-center gap-3 text-xs text-ink-soft">
-                  <span className="font-semibold text-ink">{posts[0].author}</span>
-                  <span>·</span>
-                  <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {posts[0].readTime}</span>
-                  <span>·</span>
-                  <span>{posts[0].date}</span>
-                </div>
-                <Button
-                  variant="secondary"
-                  className="mt-5"
-                  rightIcon="ArrowRight"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedPost(posts[0]);
-                  }}
-                >
-                  Read article
-                </Button>
-              </div>
+          <div className="card-surface p-12 text-center max-w-lg mx-auto mt-8 flex flex-col items-center">
+            <div className="h-16 w-16 rounded-full bg-navy/10 text-navy flex items-center justify-center mb-4">
+              <BookOpen className="h-8 w-8" />
             </div>
-          </motion.div>
+            <h3 className="text-lg font-bold text-ink mb-2">No Blog Posts Yet</h3>
+            <p className="text-sm text-ink-soft mb-6 leading-relaxed">
+              Be the first to share your insights, tutorials, or stories with the community! Click "Write Post" to publish your first article.
+            </p>
+            <Button leftIcon="Plus" onClick={handleWritePost}>Write Post</Button>
+          </div>
         </FadeIn>
-      )}
+      ) : (
+        <>
+          {/* Featured */}
+          {posts.length > 0 && (
+            <FadeIn delay={0.08}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                onClick={() => setSelectedPost(posts[0])}
+                className="card-surface overflow-hidden transition-shadow hover:shadow-lift cursor-pointer bg-white/70"
+              >
+                <div className="grid md:grid-cols-2">
+                  <div className="relative h-56 overflow-hidden bg-navy md:h-auto">
+                    <img src={posts[0].cover} alt="" className="h-full w-full object-cover" />
+                    <div className="absolute left-4 top-4">
+                      <Badge tone="navy" dot>Featured</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6 sm:p-8 text-left">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#8a6d3b]">Editor's pick</p>
+                    <h2 className="mt-2 text-2xl font-bold leading-tight text-ink">{posts[0].title}</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-soft">{posts[0].excerpt}</p>
+                    <div className="mt-5 flex items-center gap-3 text-xs text-ink-soft">
+                      <span className="font-semibold text-ink">{posts[0].author}</span>
+                      <span>·</span>
+                      <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> {posts[0].readTime}</span>
+                      <span>·</span>
+                      <span>{posts[0].date}</span>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      className="mt-5"
+                      rightIcon="ArrowRight"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPost(posts[0]);
+                      }}
+                    >
+                      Read article
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </FadeIn>
+          )}
 
-      {/* Grid */}
-      <StaggerGroup className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {posts.slice(1).map((post: any) => (
-          <StaggerItem key={post.id}>
-            <motion.article
-              whileHover={{ y: -6 }}
-              onClick={() => setSelectedPost(post)}
-              className="card-surface overflow-hidden transition-shadow hover:shadow-lift cursor-pointer flex flex-col h-full bg-white/70"
-            >
-              <div className="relative h-44 overflow-hidden">
-                <img src={post.cover} alt="" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-                <div className="absolute left-3 top-3">
-                  <Badge tone="sand">{post.readTime}</Badge>
-                </div>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between text-left">
-                <div>
-                  <h3 className="text-base font-semibold leading-snug text-ink">{post.title}</h3>
-                  <p className="mt-2 line-clamp-2 text-sm text-ink-soft">{post.excerpt}</p>
-                </div>
-                <div className="mt-4 flex items-center justify-between border-t border-border-soft pt-3">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink">
-                    <PenLine className="h-3.5 w-3.5 text-navy" /> {post.author}
-                  </span>
-                  <span className="text-xs text-ink-soft">{post.date}</span>
-                </div>
-              </div>
-            </motion.article>
-          </StaggerItem>
-        ))}
-      </StaggerGroup>
+          {/* Grid */}
+          <StaggerGroup className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 mt-6">
+            {posts.slice(1).map((post: any) => (
+              <StaggerItem key={post.id}>
+                <motion.article
+                  whileHover={{ y: -6 }}
+                  onClick={() => setSelectedPost(post)}
+                  className="card-surface overflow-hidden transition-shadow hover:shadow-lift cursor-pointer flex flex-col h-full bg-white/70"
+                >
+                  <div className="relative h-44 overflow-hidden">
+                    <img src={post.cover} alt="" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+                    <div className="absolute left-3 top-3">
+                      <Badge tone="sand">{post.readTime}</Badge>
+                    </div>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col justify-between text-left">
+                    <div>
+                      <h3 className="text-base font-semibold leading-snug text-ink">{post.title}</h3>
+                      <p className="mt-2 line-clamp-2 text-sm text-ink-soft">{post.excerpt}</p>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between border-t border-border-soft pt-3">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink">
+                        <PenLine className="h-3.5 w-3.5 text-navy" /> {post.author}
+                      </span>
+                      <span className="text-xs text-ink-soft">{post.date}</span>
+                    </div>
+                  </div>
+                </motion.article>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </>
+      )}
 
       {/* Write Post Modal */}
       {isCreateOpen && (

@@ -1,6 +1,7 @@
 import { PlannerEvent } from "../types/planner";
+import { wrapArray } from "../utils/mockData";
 
-export const mockEvents: PlannerEvent[] = [
+const rawEvents: PlannerEvent[] = [
   {
     id: "1",
     title: "Workshop",
@@ -50,3 +51,5 @@ export const mockEvents: PlannerEvent[] = [
     color: "#DC2626",
   },
 ];
+
+export const mockEvents = wrapArray(() => rawEvents);

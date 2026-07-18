@@ -8,10 +8,11 @@ import PollCard from "../../components/polls/PollCard";
 import CreatePollModal from "../../components/polls/CreatePollModal";
 
 export default function PollsPage() {
-  const { role } = useAuth();
+  const { user, role } = useAuth();
   const canCreate = role === "lead" || role === "faculty";
   const [showModal, setShowModal] = useState(false);
   const [polls, setPolls] = useState<Poll[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [userVotes, setUserVotes] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem("campusos_user_votes");
     return saved ? JSON.parse(saved) : {};
@@ -22,15 +23,16 @@ export default function PollsPage() {
     if (saved) {
       setPolls(JSON.parse(saved));
     } else {
-      setPolls(mockPolls);
+      setPolls(user?.id === 'demo' ? mockPolls : []);
     }
-  }, []);
+    setLoaded(true);
+  }, [user]);
 
   useEffect(() => {
-    if (polls.length > 0) {
+    if (loaded) {
       localStorage.setItem("campus_polls", JSON.stringify(polls));
     }
-  }, [polls]);
+  }, [polls, loaded]);
 
   const handleCreatePoll = (poll: Poll) => {
     setPolls((prev) => [poll, ...prev]);

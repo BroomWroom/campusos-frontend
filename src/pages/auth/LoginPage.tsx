@@ -413,7 +413,7 @@ export default function LoginPage({ role }: { role: Role }) {
             >
               New to {APP_NAME}?{' '}
               <Link
-                to="/signup"
+                to={role === 'member' ? "/signup" : `/signup/${role}`}
                 className="font-semibold text-navy hover:underline"
               >
                 Create an account

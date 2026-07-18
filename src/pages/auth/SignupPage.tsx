@@ -26,23 +26,13 @@ import {
 } from "../../utils/constants";
 
 import { passwordStrength } from "../../utils/cn";
+import type { Role } from "../../types";
 
-const step1Schema = z.object({
-  name: z
-    .string()
-    .min(2, "Enter your full name"),
-
-  email: z
-    .string()
-    .email("Enter a valid email"),
-
-  department: z
-    .string()
-    .min(1, "Select a department"),
-
-  year: z
-    .string()
-    .min(1, "Select your year"),
+const getStep1Schema = (role: Role) => z.object({
+  name: z.string().min(2, "Enter your full name"),
+  email: z.string().email("Enter a valid email"),
+  department: z.string().min(1, "Select a department"),
+  year: role === "faculty" ? z.string().optional() : z.string().min(1, "Select your year"),
 });
 
 const step2Schema = z.object({
@@ -69,9 +59,12 @@ const step2Schema = z.object({
   }
 );
 
-type Step1 = z.infer<
-  typeof step1Schema
->;
+type Step1 = {
+  name: string;
+  email: string;
+  department: string;
+  year?: string;
+};
 
 type Step2 = z.infer<
   typeof step2Schema
@@ -95,7 +88,7 @@ const steps = [
   },
 ];
 
-export default function SignupPage() {
+export default function SignupPage({ role = "member" }: { role?: Role }) {
   const navigate = useNavigate();
   const { register: registerUser } = useAuth();
   const { toast } = useToast();
@@ -105,7 +98,7 @@ export default function SignupPage() {
   const [data, setData] = useState<Partial<Step1>>({});
 
   const s1 = useForm<Step1>({
-    resolver: zodResolver(step1Schema),
+    resolver: zodResolver(getStep1Schema(role)),
     defaultValues: {
       name: "",
       email: "",
@@ -149,9 +142,9 @@ export default function SignupPage() {
         name: data.name!,
         email: data.email!,
         department: data.department!,
-        year: data.year!,
+        year: role === "faculty" ? "N/A" : data.year!,
         password: values.password,
-        role: "member", // Every new account becomes a member
+        role: role,
       });
 
       setStep(3);
@@ -163,7 +156,7 @@ export default function SignupPage() {
       });
 
       setTimeout(() => {
-        navigate("/login/member");
+        navigate(`/login/${role}`);
       }, 1600);
 
     } catch (error: any) {
@@ -202,7 +195,7 @@ export default function SignupPage() {
 
   return (
     <AuthLayout
-      role="member"
+      role={role}
       title="Create your CampusOS account"
       subtitle={`Join ${APP_NAME} in under a minute.`}
     >
@@ -306,28 +299,30 @@ export default function SignupPage() {
               )}
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-[0.825rem] font-semibold text-ink">
-                Year
-              </label>
+            {role !== "faculty" && (
+              <div>
+                <label className="mb-1.5 block text-[0.825rem] font-semibold text-ink">
+                  Year
+                </label>
 
-              <Dropdown
-                value={s1.watch("year") ?? ""}
-                options={YEARS.map((y) => ({
-                  value: y,
-                  label: y,
-                }))}
-                onChange={(v) =>
-                  s1.setValue("year", v, { shouldValidate: true })
-                }
-                placeholder="Select Year"
-              />
-              {s1.formState.errors.year && (
-                <p className="mt-1 text-xs text-red-500">
-                  {s1.formState.errors.year.message}
-                </p>
-              )}
-            </div>
+                <Dropdown
+                  value={s1.watch("year") ?? ""}
+                  options={YEARS.map((y) => ({
+                    value: y,
+                    label: y,
+                  }))}
+                  onChange={(v) =>
+                    s1.setValue("year", v, { shouldValidate: true })
+                  }
+                  placeholder="Select Year"
+                />
+                {s1.formState.errors.year && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {s1.formState.errors.year.message}
+                  </p>
+                )}
+              </div>
+            )}
 
             <Button
               type="submit"
@@ -440,7 +435,7 @@ export default function SignupPage() {
       <p className="mt-6 text-center text-sm text-ink-soft">
         Already have an account?{" "}
         <Link
-          to="/login/member"
+          to={`/login/${role}`}
           className="font-semibold text-navy hover:underline"
         >
           Sign In

@@ -26,6 +26,8 @@ function getNotifications(): NotificationItem[] {
   }
 }
 
+import { useEffect } from 'react';
+
 export function Navbar({ onMenuClick }: NavbarProps) {
   const scrolled = useScrollPosition();
   const { user, logout } = useAuth();
@@ -33,7 +35,18 @@ export function Navbar({ onMenuClick }: NavbarProps) {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationItem[]>(getNotifications);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(NOTIFICATIONS_KEY);
+    if (stored) {
+      setNotifications(JSON.parse(stored));
+    } else {
+      const defaultNotifs = user?.id === 'demo' ? mockNotifications : [];
+      setNotifications(defaultNotifs);
+      localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(defaultNotifs));
+    }
+  }, [user]);
 
   const role = user?.role ?? 'member';
   const navItems = NAV_ITEMS_BY_ROLE[role];

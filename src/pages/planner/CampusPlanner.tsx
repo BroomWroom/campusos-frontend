@@ -11,7 +11,7 @@ import { Card, CardHeader } from "../../components/ui/Card";
 
 export default function CampusPlanner() {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const { role } = useAuth();
+  const { user, role } = useAuth();
   const canCreate = role === "lead" || role === "faculty";
   const [events, setEvents] = useState<PlannerEvent[]>([]);
 
@@ -20,13 +20,14 @@ export default function CampusPlanner() {
     if (saved) {
       setEvents(JSON.parse(saved));
     } else {
-      setEvents(mockEvents);
+      const defaultEvents = user?.id === 'demo' ? mockEvents : [];
+      setEvents(defaultEvents);
       localStorage.setItem(
         "campusEvents",
-        JSON.stringify(mockEvents)
+        JSON.stringify(defaultEvents)
       );
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="space-y-6 pb-12">
@@ -55,24 +56,30 @@ export default function CampusPlanner() {
             <Card>
               <CardHeader title="Upcoming Events" subtitle="Events scheduled this month" />
               <StaggerGroup className="space-y-3.5 mt-2">
-                {events.slice(0, 5).map((event) => (
-                  <StaggerItem key={event.id}>
-                    <div
-                      className="pl-3.5 border-l-4 py-1.5 transition-transform hover:translate-x-1"
-                      style={{ borderColor: event.color }}
-                    >
-                      <h3 className="text-sm font-bold text-ink">
-                        {event.title}
-                      </h3>
-                      <p className="text-[0.72rem] text-ink-soft/80 mt-0.5">
-                        {new Date(event.start).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                      </p>
-                      <p className="text-[0.68rem] text-ink-soft/60">
-                        {event.venue}
-                      </p>
-                    </div>
-                  </StaggerItem>
-                ))}
+                {events.length === 0 ? (
+                  <div className="text-center py-6 text-xs text-ink-soft bg-cream-50/20 rounded-xl border border-dashed border-border-soft">
+                    No upcoming events.
+                  </div>
+                ) : (
+                  events.slice(0, 5).map((event) => (
+                    <StaggerItem key={event.id}>
+                      <div
+                        className="pl-3.5 border-l-4 py-1.5 transition-transform hover:translate-x-1"
+                        style={{ borderColor: event.color }}
+                      >
+                        <h3 className="text-sm font-bold text-ink">
+                          {event.title}
+                        </h3>
+                        <p className="text-[0.72rem] text-ink-soft/80 mt-0.5">
+                          {new Date(event.start).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                        </p>
+                        <p className="text-[0.68rem] text-ink-soft/60">
+                          {event.venue}
+                        </p>
+                      </div>
+                    </StaggerItem>
+                  ))
+                )}
               </StaggerGroup>
             </Card>
           </FadeIn>

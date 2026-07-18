@@ -1,6 +1,7 @@
 import type { Project } from "../types/project";
+import { wrapArray } from "../utils/mockData";
 
-export const mockProjects: Project[] = [
+const rawProjects: Project[] = [
   {
     id: "1",
     title: "CampusOS",
@@ -77,3 +78,5 @@ export const mockProjects: Project[] = [
     demo: "https://attendance.vercel.app",
   },
 ];
+
+export const mockProjects = wrapArray(() => rawProjects);
