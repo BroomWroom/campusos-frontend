@@ -16,7 +16,7 @@ import Dashboard from './pages/dashboard/Dashboard';
 import { MemberDashboard, LeadDashboard, FacultyDashboard } from './pages/dashboard/Dashboard';
 
 // Shared app pages
-import EventsPage from "./pages/dashboard/EventsPage";
+import EventsPage from "./EventsPage";
 import ProjectsPage from './pages/dashboard/ProjectsPage';
 import ProjectDetailsPage from './pages/dashboard/ProjectDetailsPage';
 import BadgesPage from './pages/dashboard/BadgesPage';
